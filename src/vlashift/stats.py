@@ -1,6 +1,7 @@
 """Wilson intervals, exact McNemar test and task-level bootstrap for paired success data."""
 
 import math
+from collections import defaultdict
 from collections.abc import Hashable, Mapping, Sequence
 from dataclasses import dataclass
 from statistics import NormalDist
@@ -54,23 +55,19 @@ def paired_counts(a: Mapping[Hashable, bool], b: Mapping[Hashable, bool]) -> Pai
     return PairedCounts(both, only_a, only_b, len(shared) - both - only_a - only_b)
 
 
-def per_task_differences(
-    a: Mapping[tuple[int, int], bool], b: Mapping[tuple[int, int], bool]
-) -> list[float]:
-    """Success rate of a minus success rate of b on the shared episodes, one value per task.
+def per_task_differences(a: Mapping[tuple, bool], b: Mapping[tuple, bool]) -> list[float]:
+    """Success rate of a minus that of b on the shared episodes, one value per task.
 
-    Keys are (task_id, episode_index).
+    A key is a tuple whose last element is the episode index; the rest names the task.
     """
-    shared = a.keys() & b.keys()
-    tasks = sorted({task for task, _ in shared})
-    diffs = []
-    for task in tasks:
-        episodes = [k for k in shared if k[0] == task]
-        diffs.append(
-            sum(a[k] for k in episodes) / len(episodes)
-            - sum(b[k] for k in episodes) / len(episodes)
-        )
-    return diffs
+    groups: dict[tuple, list[tuple]] = defaultdict(list)
+    for key in a.keys() & b.keys():
+        groups[key[:-1]].append(key)
+    return [
+        sum(a[k] for k in groups[task]) / len(groups[task])
+        - sum(b[k] for k in groups[task]) / len(groups[task])
+        for task in sorted(groups)
+    ]
 
 
 def _interval(means: np.ndarray, confidence: float) -> tuple[float, float]:
