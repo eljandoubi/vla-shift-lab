@@ -154,6 +154,13 @@ def test_contrast_bootstrap_needs_both_groups():
 
 
 def test_per_task_differences_group_pooled_suites_by_suite_and_task():
-    a = {("s1", 0, 0): True, ("s1", 0, 1): True, ("s2", 0, 0): True, ("s2", 0, 1): False}
-    b = {("s1", 0, 0): False, ("s1", 0, 1): False, ("s2", 0, 0): True, ("s2", 0, 1): False}
-    assert per_task_differences(a, b) == [1.0, 0.0]
+    a = {
+        ("s1", 0, 0): True,
+        ("s1", 0, 1): True,
+        ("s1", 1, 0): False,
+        ("s1", 1, 1): False,
+        ("s2", 0, 0): True,
+        ("s2", 0, 1): False,
+    }
+    b = dict.fromkeys(a, False)
+    assert per_task_differences(a, b) == [1.0, 0.0, 0.5]
