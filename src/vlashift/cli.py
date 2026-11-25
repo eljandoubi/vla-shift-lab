@@ -106,8 +106,12 @@ def cmd_show(args) -> int:
         seconds = (
             f"{run.seconds_per_episode:.1f} s/episode" if run.seconds_per_episode else "no timing"
         )
+        record = Path(directory) / "vlashift_applied.json"
+        first = json.loads(record.read_text())["first_states"] if record.is_file() else []
+        start = f", start eef {first[0][:3]}" if first else ""
         print(
-            f"{run.arm}/{run.suite}: {run.successes}/{run.episodes} episodes succeeded, {seconds}"
+            f"{run.arm}/{run.suite}: {run.successes}/{run.episodes} episodes succeeded, "
+            f"{seconds}{start}"
         )
     return 0
 

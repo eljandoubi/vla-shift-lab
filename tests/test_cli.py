@@ -125,6 +125,17 @@ def test_show_prints_one_line_per_run(tmp_path, capsys):
     ]
 
 
+def test_show_adds_the_start_pose_when_the_hook_record_has_one(tmp_path, capsys):
+    directory = write_run(tmp_path, "keep", "libero_goal", {0: flags(1, episodes=1)})
+    record = {"first_states": [[0.1, -0.2, 0.9, 0.0, 0.0, 0.0, 0.02, -0.02]]}
+    (directory / "vlashift_applied.json").write_text(json.dumps(record))
+    code, out = run(capsys, "show", directory)
+    assert code == 0
+    assert out.strip() == (
+        "keep/libero_goal: 1/1 episodes succeeded, 7.5 s/episode, start eef [0.1, -0.2, 0.9]"
+    )
+
+
 def test_meta_records_the_protocol(tmp_path, capsys, monkeypatch):
     monkeypatch.setenv("VLASHIFT_NOISE_STD", "0.1")
     monkeypatch.setenv("HOME_SECRET", "no")
