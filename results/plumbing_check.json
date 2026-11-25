@@ -1,0 +1,97 @@
+{
+  "torch": "2.15.0",
+  "build_and_run_seconds": 55.1,
+  "arms": [
+    {
+      "arm": "keep",
+      "text": "open the top drawer and put the bowl inside",
+      "tokens": 10,
+      "action_shape": [
+        1,
+        7
+      ],
+      "action_head": [
+        -0.598,
+        -1.4,
+        0.134
+      ],
+      "seconds": 9.4
+    },
+    {
+      "arm": "blank",
+      "text": "",
+      "tokens": 1,
+      "action_shape": [
+        1,
+        7
+      ],
+      "action_head": [
+        -0.5712,
+        -1.4258,
+        0.1085
+      ],
+      "seconds": 7.2
+    },
+    {
+      "arm": "other",
+      "text": "put the bowl on top of the cabinet",
+      "tokens": 9,
+      "action_shape": [
+        1,
+        7
+      ],
+      "action_head": [
+        -0.5584,
+        -1.3873,
+        0.1191
+      ],
+      "seconds": 5.2
+    },
+    {
+      "arm": "shuffled",
+      "text": "and bowl open the inside put the drawer top",
+      "tokens": 10,
+      "action_shape": [
+        1,
+        7
+      ],
+      "action_head": [
+        -0.5942,
+        -1.4133,
+        0.1421
+      ],
+      "seconds": 5.5
+    },
+    {
+      "arm": "paraphrase",
+      "text": "pull open the top drawer and place the bowl in it",
+      "tokens": 12,
+      "action_shape": [
+        1,
+        7
+      ],
+      "action_head": [
+        -0.5661,
+        -1.4177,
+        0.1045
+      ],
+      "seconds": 5.8
+    }
+  ],
+  "all_actions_have_shape_1x7": true,
+  "distinct_action_heads": 5,
+  "token_counts": {
+    "keep": 10,
+    "blank": 1,
+    "other": 9,
+    "shuffled": 10,
+    "paraphrase": 12
+  },
+  "image_hook": {
+    "is_tensor": true,
+    "dtype_kept": true,
+    "device_kept": true,
+    "changed": true,
+    "in_range": true
+  }
+}
