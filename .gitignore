@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+runs/
+results/raw/
+*.mp4
+*.pt
+*.safetensors
+.DS_Store
