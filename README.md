@@ -70,6 +70,8 @@ Settings are environment variables (defaults in `colab/common.sh`): `OUT`, `SUIT
 
 **Protocol.** Checkpoint `lerobot/smolvla_libero` at revision `a24f1f380461b665158d52acd140152c79e8b36d`, LeRobot 0.7.0. Four suites (Spatial, Object, Goal, Long = `libero_10`), 10 tasks each, 10 episodes per task. One environment per task (`--eval.batch_size=1`): episode j gets seed 1000 + j and init state j in every arm, which I read in the LeRobot 0.7.0 source and which the smoke test checks through the start pose. Hard resets. Images are rendered at 256 by 256, the training size of the checkpoint; LeRobot 0.7.0 renders 360 by 360 unless told otherwise. Episodes end at the LeRobot step limits (280, 280, 300 and 520).
 
+**First pass.** The plan above assumed 8 seconds per episode. Measured on a free T4 runtime (2 vCPUs, rendering on the GPU), an episode takes 12 seconds when it succeeds and 24 when it runs to the step limit. Four suites with 10 episodes per task and 14 arms would therefore take more than 30 hours. The first pass runs Spatial, Object and Goal, the three suites the hypotheses use, with 5 episodes per task: the baseline, the four instruction arms and the first level of each shift, which is 9 arms of 150 episodes. Seeds and init states are those of the first five episodes of the plan. Long, the second level of each shift and the other five episodes of each task are not run in this pass.
+
 **Arms.** `keep` is the baseline.
 
 | arm | what changes |
@@ -89,11 +91,11 @@ Image shifts apply to both cameras, after the environment pre-processor and befo
 
 - H1: the instruction matters little where the scene fixes the task. It holds if D(Spatial, blank) and D(Object, blank) are below 15 and D(Goal, blank) exceeds the larger of them by at least 15. It is falsified if either of the first two is 30 or more, or if D(Goal, blank) does not exceed both. In between the answer is "unclear".
 - H2: a wrong instruction changes nothing where the policy follows its visual habit. It holds if D(Spatial, other) and D(Object, other) are below 10, and is falsified if either is 20 or more.
-- H3: noise and occlusion hurt more than brightness. With D over all 400 episodes at `noise_0.1`, `occl_0.4` and `bright_0.5`, it holds if the 95% intervals of D(noise) and D(occl) lie entirely above the interval of D(bright), and is falsified if D(bright) is at least as large as either.
+- H3: noise and occlusion hurt more than brightness. With D over all the episodes run (150 in the first pass) at `noise_0.1`, `occl_0.4` and `bright_0.5`, it holds if the 95% intervals of D(noise) and D(occl) lie entirely above the interval of D(bright), and is falsified if D(bright) is at least as large as either.
 
 No direction is committed for `shuffled`, `paraphrase` and `joint`: the audits above disagree on language (LIBERO-Plus finds models largely insensitive to language variations, LIBERO-Para finds drops of 22 to 52 points under paraphrases), so these arms are reported as exploratory.
 
-**Statistics.** Wilson 95% interval per cell. Each arm is compared with `keep` on the same episodes in two ways. The exact McNemar test on the discordant pairs is labelled uncorrected: 13 arms times 5 scopes are compared and nothing is corrected. The mean difference gets a 95% interval from resampling whole tasks, because the 10 episodes of a task share a scene and an instruction. McNemar's p-value treats episodes as independent and is therefore optimistic; the task-resampling interval is the one to trust.
+**Statistics.** Wilson 95% interval per cell. Each arm is compared with `keep` on the same episodes in two ways. The exact McNemar test on the discordant pairs is labelled uncorrected: 8 arms times 4 scopes (three suites and all of them) are compared in the first pass and nothing is corrected. The mean difference gets a 95% interval from resampling whole tasks, because the episodes of a task share a scene and an instruction. McNemar's p-value treats episodes as independent and is therefore optimistic; the task-resampling interval is the one to trust.
 
 **Failure modes.** The `lerobot-eval` output holds success, summed reward and maximum reward per episode, and nothing on how a failed episode went. The study reports success only. `VIDEOS=1` saves a few videos (rendered from the raw simulator, not from the shifted images) for a hand-made look.
 
@@ -103,7 +105,7 @@ No direction is committed for `shuffled`, `paraphrase` and `joint`: the audits a
 
 - Not run on LIBERO yet: LIBERO needs Linux and its assets come from the Hub, and the weights could not be downloaded on the machine this was written on.
 - Done on a Mac: the fast test suite, a build of the patched script against the LeRobot 0.7.0 source (it compiles, and the diff to the original is the five edits), and the five instruction arms through a SmolVLA with random weights on CPU (`results/plumbing_check.json`: shapes, token counts, the image hook on torch tensors). Random weights say nothing about success.
-- One checkpoint, one training seed. One suite and arm is 100 episodes: at 90% success the Wilson interval runs from 82.6 to 94.5, and over the four suites (400 episodes) from about 87 to 93.
+- One checkpoint, one training seed. A suite and arm is 50 episodes in the first pass: at 90% success the Wilson interval runs from 78.6 to 95.7, and over the three suites (150 episodes) from 84.2 to 93.8.
 - The `other` arm scores success on the original task. It cannot tell a policy that follows the new instruction from one that is only confused.
 - Noise is drawn from a seeded generator but follows the policy's trajectory, so it is not paired across arms; the simulator is.
 - The occluder, the choice of both cameras and the paraphrases are my choices.
