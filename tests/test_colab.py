@@ -76,6 +76,23 @@ def test_common_replaces_the_notebook_plotting_backend():
     assert done.stdout.splitlines()[-1] == "Agg"
 
 
+def test_egl_script_writes_the_vendor_file_for_the_nvidia_library(tmp_path):
+    lib = tmp_path / "libEGL_nvidia.so.0"
+    lib.touch()
+    vendor = tmp_path / "vendor"
+    done = run(tmp_path, "egl.sh", NVIDIA_EGL_LIB=lib, EGL_VENDOR_DIR=vendor)
+    assert done.returncode == 0
+    record = json.loads((vendor / "10_nvidia.json").read_text())
+    assert record["ICD"]["library_path"] == str(lib)
+
+
+def test_egl_script_does_nothing_without_the_library(tmp_path):
+    vendor = tmp_path / "vendor"
+    done = run(tmp_path, "egl.sh", NVIDIA_EGL_LIB=tmp_path / "missing.so", EGL_VENDOR_DIR=vendor)
+    assert done.returncode == 0 and "stays on the CPU" in done.stdout
+    assert not vendor.exists()
+
+
 @pytest.mark.parametrize("script", SCRIPTS, ids=lambda p: p.name)
 def test_scripts_are_valid_bash(script):
     assert subprocess.run(["bash", "-n", str(script)], check=False).returncode == 0

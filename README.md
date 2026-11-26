@@ -22,12 +22,14 @@ It also writes `results/tables.md` (the table above, the paired comparison with 
 
 A T4 is enough. Mount Drive first so results survive a disconnect. Every block is a `%%bash` cell.
 
-1. Setup, once (installs LeRobot and LIBERO in a Python 3.12 virtualenv, builds the patched evaluation script, checks offscreen rendering):
+1. Setup, once (installs LeRobot and LIBERO in a Python 3.12 virtualenv, enables GPU rendering, builds the patched evaluation script, checks offscreen rendering):
 
 ```bash
 git clone https://github.com/eljandoubi/vla-shift-lab.git /content/vla-shift-lab
 bash /content/vla-shift-lab/colab/setup.sh
 ```
+
+The Colab image ships NVIDIA's EGL library without an EGL vendor file, so MuJoCo renders on the CPU through Mesa's llvmpipe: on a T4 runtime with 2 vCPUs a LIBERO step took 430 to 500 ms there and 33 to 36 ms with the GPU. `colab/egl.sh` writes the vendor file, and the setup prints the OpenGL renderer so a CPU fallback is visible (`llvmpipe` instead of `Tesla T4`).
 
 2. Smoke test, nine one-episode runs (every hook once), about 10 to 15 minutes. It prints success, seconds per episode, the start pose of the arm, the GPU memory peak and `SMOKE OK`:
 

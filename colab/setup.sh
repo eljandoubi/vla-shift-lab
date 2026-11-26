@@ -9,6 +9,7 @@ set -euo pipefail
 nvidia-smi --query-gpu=name,memory.total --format=csv,noheader
 apt-get -qq update
 apt-get -qq install -y ffmpeg git libegl1 libgl1 libglvnd0 libosmesa6 > /dev/null
+bash "$HERE/egl.sh"
 command -v uv > /dev/null || pip -q install uv
 uv venv --python 3.12 "$LR"
 uv pip install --python "$PY" "lerobot[smolvla,libero]"
@@ -21,6 +22,15 @@ mkdir -p "$HOME/.libero"
 "$PY" -c "import torch; print('torch', torch.__version__, 'cuda available', torch.cuda.is_available())"
 "$PY" - << 'EOF'
 import mujoco
+from mujoco.egl import GLContext
+from OpenGL import GL
+
+context = GLContext(max_width=64, max_height=64)
+context.make_current()
+name = GL.glGetString(GL.GL_RENDERER).decode()
+print("OpenGL renderer:", name)
+if "llvmpipe" in name:
+    print("WARNING: software rendering, an episode will take minutes instead of seconds")
 
 model = mujoco.MjModel.from_xml_string("<mujoco><worldbody><geom size='.1'/></worldbody></mujoco>")
 data = mujoco.MjData(model)
