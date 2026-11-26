@@ -9,6 +9,7 @@ from helpers import flags, uniform, write_run
 from vlashift.report import (
     cell,
     delta_points,
+    episode_csv,
     episodes_in,
     figures,
     format_p,
@@ -50,6 +51,16 @@ def test_episodes_in_a_suite_or_everywhere(tree):
     assert ("libero_goal", 3, 9) in one
     assert len(episodes_in(tree["keep"], "all")) == 200
     assert episodes_in(tree["noise_0.1"], "libero_spatial") == {}
+
+
+def test_episode_csv_has_one_line_per_episode_in_arm_and_suite_order(tree):
+    lines = episode_csv(tree).splitlines()
+    assert lines[0] == "arm,suite,task,episode,success"
+    assert len(lines) == 601
+    assert lines[1] == "keep,libero_spatial,0,0,1"
+    assert "keep,libero_spatial,0,9,0" in lines
+    assert lines[101] == "keep,libero_goal,0,0,1"
+    assert lines[-1] == "mystery,libero_goal,9,9,0"
 
 
 def test_cell_text():
@@ -297,6 +308,9 @@ def test_write_all_creates_tables_summary_and_figures(tmp_path):
     assert {r["arm"] for r in summary["paired"]} == {"blank"}
     assert (out / "figures" / "success_by_arm.png").stat().st_size > 1000
     assert (out / "figures" / "drop_vs_keep.png").stat().st_size > 1000
+    lines = (out / "episodes.csv").read_text().splitlines()
+    assert lines[0] == "arm,suite,task,episode,success"
+    assert len(lines) == 401
 
 
 def test_figures_without_a_baseline_only_draw_the_first_chart(tmp_path):

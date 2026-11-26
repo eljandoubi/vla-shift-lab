@@ -284,8 +284,20 @@ def figures(tree: dict[str, dict[str, Run]], directory: Path) -> None:
         plt.close(fig)
 
 
+def episode_csv(tree: dict[str, dict[str, Run]]) -> str:
+    """One line per episode, enough to redo every paired comparison without the run folders."""
+    lines = ["arm,suite,task,episode,success"]
+    for arm in ordered_arms(tree):
+        for suite in SUITES:
+            if suite not in tree[arm]:
+                continue
+            for (task, episode), flag in sorted(tree[arm][suite].outcomes.items()):
+                lines.append(f"{arm},{suite},{task},{episode},{int(flag)}")
+    return "\n".join(lines) + "\n"
+
+
 def write_all(runs: Path, out: Path) -> str:
-    """Write tables.md, summary.json and the figures under out; return the results table."""
+    """Write tables.md, summary.json, episodes.csv and the figures under out; return the table."""
     tree = load_tree(runs)
     if not tree:
         raise ValueError(f"no finished run under {runs}")
@@ -315,6 +327,7 @@ def write_all(runs: Path, out: Path) -> str:
         json.dumps({"cells": cells, "paired": rows}, indent=2) + "\n", encoding="utf-8"
     )
     figures(tree, out / "figures")
+    (out / "episodes.csv").write_text(episode_csv(tree), encoding="utf-8")
     return f"{table}\n\n{verdicts}"
 
 
