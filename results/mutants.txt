@@ -1,4 +1,4 @@
-39 of 39 mutants killed
+43 of 43 mutants killed
 killed    wilson_centre_unshifted            src/vlashift/stats.py
 killed    wilson_not_clamped                 src/vlashift/stats.py
 killed    wilson_wrong_z                     src/vlashift/stats.py
@@ -33,8 +33,12 @@ killed    h1_falsifier_threshold_raised      src/vlashift/report.py
 killed    h1_goal_tie_passes                 src/vlashift/report.py
 killed    h2_holds_threshold_loosened        src/vlashift/report.py
 killed    h2_falsifier_threshold_raised      src/vlashift/report.py
+killed    h2_needs_both_suites_to_falsify    src/vlashift/report.py
+killed    h2_holds_from_one_suite            src/vlashift/report.py
 killed    h3_touching_intervals_hold         src/vlashift/report.py
 killed    h3_brightness_tie_passes           src/vlashift/report.py
 killed    h3_checks_only_noise               src/vlashift/report.py
 killed    h3_arms_on_different_episodes      src/vlashift/report.py
 killed    hypothesis_delta_sign_flipped      src/vlashift/report.py
+killed    h1_needs_a_goal_run_to_falsify     src/vlashift/report.py
+killed    h1_goal_may_be_missing_from_the_rows src/vlashift/report.py

@@ -129,7 +129,7 @@ No direction is committed for `shuffled`, `paraphrase` and `joint`: the audits a
 - Noise is drawn from a seeded generator but follows the policy's trajectory, so it is not paired across arms; the simulator is.
 - The occluder, the choice of both cameras and the paraphrases are my choices.
 - LIBERO-Plus (a second environment with 10,030 variants) is not part of this code.
-- `results/mutants.txt` is the output of `scripts/mutate_check.py`: 39 hand-made faults (in the statistics, the instruction transforms, the parsing of results, the image and joint shifts, the start-pose check, the patch and the verdict thresholds) are applied one at a time to a copy of the sources, and each must make a test fail. It says nothing about faults it does not contain.
+- `results/mutants.txt` is the output of `scripts/mutate_check.py`: 43 hand-made faults (in the statistics, the instruction transforms, the parsing of results, the image and joint shifts, the start-pose check, the patch and the verdict thresholds) are applied one at a time to a copy of the sources, and each must make a test fail. It says nothing about faults it does not contain.
 
 ## Licence
 

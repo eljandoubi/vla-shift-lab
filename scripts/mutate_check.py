@@ -168,26 +168,38 @@ MUTANTS = [
     (
         "h1_falsifier_threshold_raised",
         "src/vlashift/report.py",
-        "if worst >= 30 or goal <= worst:",
-        "if worst >= 31 or goal <= worst:",
+        "    if worst >= 30:\n",
+        "    if worst >= 31:\n",
     ),
     (
         "h1_goal_tie_passes",
         "src/vlashift/report.py",
-        "if worst >= 30 or goal <= worst:",
-        "if worst >= 30 or goal < worst:",
+        "    if goal <= worst:\n",
+        "    if goal < worst:\n",
     ),
     (
         "h2_holds_threshold_loosened",
         "src/vlashift/report.py",
-        'return "holds" if worst < 10 else "unclear"',
-        'return "holds" if worst < 11 else "unclear"',
+        'return "holds" if max(seen) < 10 else "unclear"',
+        'return "holds" if max(seen) < 11 else "unclear"',
     ),
     (
         "h2_falsifier_threshold_raised",
         "src/vlashift/report.py",
-        "if worst >= 20:",
-        "if worst > 20:",
+        "if any(value >= 20 for value in seen):",
+        "if any(value > 20 for value in seen):",
+    ),
+    (
+        "h2_needs_both_suites_to_falsify",
+        "src/vlashift/report.py",
+        "if any(value >= 20 for value in seen):",
+        "if len(seen) == 2 and any(value >= 20 for value in seen):",
+    ),
+    (
+        "h2_holds_from_one_suite",
+        "src/vlashift/report.py",
+        "if len(seen) < 2:",
+        "if len(seen) < 1:",
     ),
     (
         "h3_touching_intervals_hold",
@@ -218,6 +230,18 @@ MUTANTS = [
         "src/vlashift/report.py",
         "return 100 * (counts.only_a - counts.only_b) / counts.pairs",
         "return 100 * (counts.only_b - counts.only_a) / counts.pairs",
+    ),
+    (
+        "h1_needs_a_goal_run_to_falsify",
+        "src/vlashift/report.py",
+        "    if worst >= 30:\n",
+        "    if worst >= 30 and goal is not None:\n",
+    ),
+    (
+        "h1_goal_may_be_missing_from_the_rows",
+        "src/vlashift/report.py",
+        'if {"Spatial", "Object"} <= blank.keys()',
+        'if {"Spatial", "Object", "Goal"} <= blank.keys()',
     ),
 ]
 
