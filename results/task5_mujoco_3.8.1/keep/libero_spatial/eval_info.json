@@ -1,0 +1,70 @@
+{
+  "per_task": [
+    {
+      "task_group": "libero_spatial",
+      "task_id": 5,
+      "metrics": {
+        "sum_rewards": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "max_rewards": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "successes": [
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "video_paths": [],
+        "predicted_video_paths": []
+      },
+      "n_episodes": 5,
+      "n_success": 0,
+      "pc_success": 0.0,
+      "pc_success_ci95": [
+        2.7755575615628914e-15,
+        43.448246478317465
+      ]
+    }
+  ],
+  "per_group": {
+    "libero_spatial": {
+      "avg_sum_reward": 0.0,
+      "avg_max_reward": 0.0,
+      "pc_success": 0.0,
+      "n_episodes": 5,
+      "n_success": 0,
+      "pc_success_ci95": [
+        2.7755575615628914e-15,
+        43.448246478317465
+      ],
+      "video_paths": [],
+      "predicted_video_paths": []
+    }
+  },
+  "overall": {
+    "avg_sum_reward": 0.0,
+    "avg_max_reward": 0.0,
+    "pc_success": 0.0,
+    "n_episodes": 5,
+    "n_success": 0,
+    "pc_success_ci95": [
+      2.7755575615628914e-15,
+      43.448246478317465
+    ],
+    "eval_s": 160.83374500274658,
+    "eval_ep_s": 32.16674909591675,
+    "video_paths": [],
+    "predicted_video_paths": []
+  }
+}
