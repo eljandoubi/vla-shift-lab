@@ -346,7 +346,14 @@ def write_all(runs: Path, out: Path) -> str:
     )
     figures(tree, out / "figures")
     (out / "episodes.csv").write_text(episode_csv(tree), encoding="utf-8")
-    return f"{table}\n\n{verdicts}"
+    return (
+        "**Success rate in %**, with the 95% Wilson interval and (successes/episodes)\n\n"
+        f"{table}\n\n"
+        "The All column adds up the suites an arm ran, so rows that ran different suites do not "
+        "compare directly; the paired table in `results/tables.md` does.\n\n"
+        "**Hypotheses**, with the thresholds of the Design section; points are keep minus arm\n\n"
+        f"{verdicts}"
+    )
 
 
 def update_readme(readme: Path, table: str) -> None:

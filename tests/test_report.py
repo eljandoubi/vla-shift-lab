@@ -298,7 +298,8 @@ def test_write_all_creates_tables_summary_and_figures(tmp_path):
     out = tmp_path / "out"
     table = write_all(runs, out)
     text = (out / "tables.md").read_text()
-    assert table.startswith(results_table(load_tree(runs)))
+    assert table.startswith("**Success rate in %**")
+    assert results_table(load_tree(runs)) in table
     assert "| H1:" in table
     assert "## Hypotheses" in text
     assert "## Paired comparison with keep" in text
