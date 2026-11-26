@@ -1,0 +1,63 @@
+{
+  "cells": {
+    "blank": {
+      "libero_spatial": {
+        "successes": 0,
+        "episodes": 50
+      },
+      "libero_object": {
+        "successes": 1,
+        "episodes": 50
+      }
+    },
+    "keep": {
+      "libero_spatial": {
+        "successes": 44,
+        "episodes": 50
+      },
+      "libero_object": {
+        "successes": 46,
+        "episodes": 50
+      },
+      "libero_goal": {
+        "successes": 44,
+        "episodes": 50
+      }
+    }
+  },
+  "paired": [
+    {
+      "arm": "blank",
+      "scope": "libero_spatial",
+      "pairs": 50,
+      "delta": 88.00000000000001,
+      "low": 80.0,
+      "high": 96.0,
+      "keep_only": 44,
+      "arm_only": 0,
+      "p": 1.1368683772161603e-13
+    },
+    {
+      "arm": "blank",
+      "scope": "libero_object",
+      "pairs": 50,
+      "delta": 90.0,
+      "low": 78.0,
+      "high": 100.0,
+      "keep_only": 45,
+      "arm_only": 0,
+      "p": 5.684341886080802e-14
+    },
+    {
+      "arm": "blank",
+      "scope": "all",
+      "pairs": 100,
+      "delta": 89.0,
+      "low": 81.00000000000001,
+      "high": 95.0,
+      "keep_only": 89,
+      "arm_only": 0,
+      "p": 3.2311742677852644e-27
+    }
+  ]
+}
