@@ -20,6 +20,8 @@ DUMP_FRAMES=${DUMP_FRAMES:-0}            # policy-input frames saved as png, for
 DRY_RUN=${DRY_RUN:-0}                    # 1: print the commands, run nothing
 
 export MUJOCO_GL=${MUJOCO_GL:-egl} PYOPENGL_PLATFORM=${PYOPENGL_PLATFORM:-egl}
+# Colab exports the notebook backend, which matplotlib in the virtualenv rejects at import.
+export MPLBACKEND=Agg
 export PATH="$LR/bin:$PATH"
 
 HERE=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)

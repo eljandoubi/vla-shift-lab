@@ -64,6 +64,18 @@ def dry_lines(done):
     return [line for line in done.stdout.splitlines() if line.startswith("DRY ")]
 
 
+def test_common_replaces_the_notebook_plotting_backend():
+    """Colab exports a notebook backend that matplotlib in the virtualenv rejects."""
+    done = subprocess.run(
+        ["bash", "-c", f". {COLAB / 'common.sh'}; echo $MPLBACKEND"],
+        capture_output=True,
+        text=True,
+        env={**os.environ, "MPLBACKEND": "module://matplotlib_inline.backend_inline"},
+        check=False,
+    )
+    assert done.stdout.splitlines()[-1] == "Agg"
+
+
 @pytest.mark.parametrize("script", SCRIPTS, ids=lambda p: p.name)
 def test_scripts_are_valid_bash(script):
     assert subprocess.run(["bash", "-n", str(script)], check=False).returncode == 0
