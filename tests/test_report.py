@@ -8,9 +8,15 @@ from helpers import flags, uniform, write_run
 
 from vlashift.report import (
     cell,
+    delta_points,
     episodes_in,
     figures,
     format_p,
+    h1_verdict,
+    h2_verdict,
+    h3_verdict,
+    hypothesis_rows,
+    hypothesis_table,
     ordered_arms,
     paired_rows,
     paired_table,
@@ -107,6 +113,121 @@ def test_format_p(p, text):
     assert format_p(p) == text
 
 
+def test_delta_points_is_keep_minus_arm_on_the_shared_episodes(tree):
+    assert delta_points(tree, "blank", "libero_spatial") == pytest.approx(80.0)
+    assert delta_points(tree, "blank", "all") == pytest.approx(80.0)
+    assert delta_points(tree, "noise_0.1", "libero_spatial") is None
+    assert delta_points(tree, "missing", "all") is None
+
+
+@pytest.mark.parametrize(
+    ("spatial", "obj", "goal", "verdict"),
+    [
+        (0, 0, 40, "holds"),
+        (14, 0, 29, "holds"),
+        (0, 14, 29, "holds"),
+        (14, 0, 28, "unclear"),
+        (15, 0, 60, "unclear"),
+        (0, 15, 60, "unclear"),
+        (29, 0, 90, "unclear"),
+        (30, 0, 90, "falsified"),
+        (0, 30, 90, "falsified"),
+        (5, 5, 5, "falsified"),
+        (5, 3, 5, "falsified"),
+        (3, 5, 5, "falsified"),
+        (5, 3, 6, "unclear"),
+    ],
+)
+def test_h1_verdict_follows_the_thresholds_of_the_readme(spatial, obj, goal, verdict):
+    assert h1_verdict(spatial, obj, goal) == verdict
+
+
+@pytest.mark.parametrize(
+    ("spatial", "obj", "verdict"),
+    [
+        (0, 0, "holds"),
+        (9, 0, "holds"),
+        (0, 9, "holds"),
+        (-5, -3, "holds"),
+        (10, 0, "unclear"),
+        (0, 10, "unclear"),
+        (19, 0, "unclear"),
+        (20, 0, "falsified"),
+        (0, 20, "falsified"),
+    ],
+)
+def test_h2_verdict_follows_the_thresholds_of_the_readme(spatial, obj, verdict):
+    assert h2_verdict(spatial, obj) == verdict
+
+
+@pytest.mark.parametrize(
+    ("noise", "occl", "bright", "verdict"),
+    [
+        ((20, 10, 30), (25, 12, 35), (2, -5, 8), "holds"),
+        ((20, 10, 30), (25, 12, 35), (2, -5, 11), "unclear"),
+        ((20, 10, 30), (25, 8, 35), (2, -5, 8), "unclear"),
+        ((20, 8, 30), (25, 12, 35), (2, -5, 8), "unclear"),
+        ((20, 10, 30), (25, 12, 35), (20, 10, 30), "falsified"),
+        ((20, 10, 30), (25, 12, 35), (25, 18, 32), "falsified"),
+        ((20, 10, 30), (25, 12, 35), (-4, -9, 1), "holds"),
+    ],
+)
+def test_h3_verdict_needs_both_intervals_above_the_brightness_interval(
+    noise, occl, bright, verdict
+):
+    assert h3_verdict(noise, occl, bright) == verdict
+
+
+def test_h3_needs_the_intervals_to_clear_each_other_not_just_touch():
+    assert h3_verdict((20, 8, 30), (25, 8, 35), (2, -5, 8)) == "unclear"
+    assert h3_verdict((20, 9, 30), (25, 9, 35), (2, -5, 8)) == "holds"
+
+
+def test_hypothesis_rows_apply_the_rules_to_a_complete_tree(tmp_path):
+    suites = ("libero_spatial", "libero_object", "libero_goal")
+    for suite in suites:
+        write_run(tmp_path, "keep", suite, uniform(9))
+    for suite, kept in zip(suites, (8, 9, 2), strict=True):
+        write_run(tmp_path, "blank", suite, uniform(kept))
+    for suite in suites[:2]:
+        write_run(tmp_path, "other", suite, uniform(9))
+    for arm, kept in (("noise_0.1", 3), ("occl_0.4", 5), ("bright_0.5", 9)):
+        for suite in suites:
+            write_run(tmp_path, arm, suite, uniform(kept))
+    rows = hypothesis_rows(load_tree(tmp_path))
+    assert [row[2] for row in rows] == ["holds", "holds", "holds"]
+    assert rows[0][1] == "blank: Spatial +10.0, Object +0.0, Goal +70.0"
+    assert rows[1][1] == "other: Spatial +0.0, Object +0.0"
+    assert rows[2][1] == (
+        "noise_0.1 +60.0 [+60.0, +60.0], occl_0.4 +40.0 [+40.0, +40.0], "
+        "bright_0.5 +0.0 [+0.0, +0.0]"
+    )
+
+
+def test_hypothesis_rows_say_not_run_when_an_arm_is_missing(tree):
+    rows = hypothesis_rows(tree)
+    assert [row[2] for row in rows] == ["not run", "not run", "not run"]
+    assert rows[0][1] == "blank: Spatial +80.0, Goal +80.0"
+    assert rows[1][1] == ""
+    assert rows[2][1] == "noise_0.1 +0.0 [+0.0, +0.0]"
+
+
+def test_h3_waits_for_the_same_episodes_in_every_arm(tmp_path):
+    suites = ("libero_spatial", "libero_object", "libero_goal")
+    for suite in suites:
+        write_run(tmp_path, "keep", suite, uniform(9))
+    for arm, kept in (("noise_0.1", 3), ("occl_0.4", 5), ("bright_0.5", 9)):
+        for suite in suites if arm != "bright_0.5" else suites[:2]:
+            write_run(tmp_path, arm, suite, uniform(kept))
+    assert hypothesis_rows(load_tree(tmp_path))[2][2] == "not run"
+
+
+def test_hypothesis_table_has_one_row_per_hypothesis(tree):
+    lines = hypothesis_table(hypothesis_rows(tree)).splitlines()
+    assert lines[0] == "| hypothesis | points, keep minus arm | verdict |"
+    assert [line.split(" ")[1] for line in lines[2:]] == ["H1:", "H2:", "H3:"]
+
+
 def test_timing_summary_weights_runs_by_episodes(tree):
     text = timing_summary(tree)
     assert text.startswith("6 runs, 600 episodes")
@@ -131,7 +252,9 @@ def test_write_all_creates_tables_summary_and_figures(tmp_path):
     out = tmp_path / "out"
     table = write_all(runs, out)
     text = (out / "tables.md").read_text()
-    assert table in text
+    assert table.startswith(results_table(load_tree(runs)))
+    assert "| H1:" in table
+    assert "## Hypotheses" in text
     assert "## Paired comparison with keep" in text
     assert "blank/libero_object.partial" in text
     summary = json.loads((out / "summary.json").read_text())
