@@ -1,4 +1,4 @@
-28 of 28 mutants killed
+39 of 39 mutants killed
 killed    wilson_centre_unshifted            src/vlashift/stats.py
 killed    wilson_not_clamped                 src/vlashift/stats.py
 killed    wilson_wrong_z                     src/vlashift/stats.py
@@ -27,3 +27,14 @@ killed    rate_not_in_percent                src/vlashift/report.py
 killed    no_start_pose_check                src/vlashift/checks.py
 killed    zero_level_accepted                src/vlashift/config.py
 killed    images_hook_before_preprocessor    src/vlashift/patch.py
+killed    h1_cost_threshold_loosened         src/vlashift/report.py
+killed    h1_goal_gap_shrunk                 src/vlashift/report.py
+killed    h1_falsifier_threshold_raised      src/vlashift/report.py
+killed    h1_goal_tie_passes                 src/vlashift/report.py
+killed    h2_holds_threshold_loosened        src/vlashift/report.py
+killed    h2_falsifier_threshold_raised      src/vlashift/report.py
+killed    h3_touching_intervals_hold         src/vlashift/report.py
+killed    h3_brightness_tie_passes           src/vlashift/report.py
+killed    h3_checks_only_noise               src/vlashift/report.py
+killed    h3_arms_on_different_episodes      src/vlashift/report.py
+killed    hypothesis_delta_sign_flipped      src/vlashift/report.py

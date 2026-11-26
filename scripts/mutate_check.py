@@ -153,6 +153,72 @@ MUTANTS = [
         '"observation = _vlashift.images(env_preprocessor(observation))",',
         '"observation = env_preprocessor(_vlashift.images(observation))",',
     ),
+    (
+        "h1_cost_threshold_loosened",
+        "src/vlashift/report.py",
+        "if worst < 15 and goal - worst >= 15:",
+        "if worst < 16 and goal - worst >= 15:",
+    ),
+    (
+        "h1_goal_gap_shrunk",
+        "src/vlashift/report.py",
+        "goal - worst >= 15",
+        "goal - worst >= 14",
+    ),
+    (
+        "h1_falsifier_threshold_raised",
+        "src/vlashift/report.py",
+        "if worst >= 30 or goal <= worst:",
+        "if worst >= 31 or goal <= worst:",
+    ),
+    (
+        "h1_goal_tie_passes",
+        "src/vlashift/report.py",
+        "if worst >= 30 or goal <= worst:",
+        "if worst >= 30 or goal < worst:",
+    ),
+    (
+        "h2_holds_threshold_loosened",
+        "src/vlashift/report.py",
+        'return "holds" if worst < 10 else "unclear"',
+        'return "holds" if worst < 11 else "unclear"',
+    ),
+    (
+        "h2_falsifier_threshold_raised",
+        "src/vlashift/report.py",
+        "if worst >= 20:",
+        "if worst > 20:",
+    ),
+    (
+        "h3_touching_intervals_hold",
+        "src/vlashift/report.py",
+        "if min(noise[1], occl[1]) > bright[2]:",
+        "if min(noise[1], occl[1]) >= bright[2]:",
+    ),
+    (
+        "h3_brightness_tie_passes",
+        "src/vlashift/report.py",
+        "if bright[0] >= min(noise[0], occl[0]):",
+        "if bright[0] > min(noise[0], occl[0]):",
+    ),
+    (
+        "h3_checks_only_noise",
+        "src/vlashift/report.py",
+        "if min(noise[1], occl[1]) > bright[2]:",
+        "if noise[1] > bright[2]:",
+    ),
+    (
+        "h3_arms_on_different_episodes",
+        "src/vlashift/report.py",
+        'same_episodes = len(image) == 3 and len({r["pairs"] for r in image.values()}) == 1',
+        "same_episodes = len(image) == 3",
+    ),
+    (
+        "hypothesis_delta_sign_flipped",
+        "src/vlashift/report.py",
+        "return 100 * (counts.only_a - counts.only_b) / counts.pairs",
+        "return 100 * (counts.only_b - counts.only_a) / counts.pairs",
+    ),
 ]
 
 TEST_COMMAND = [sys.executable, "-m", "pytest", "-q", "-x", "-p", "no:cacheprovider", "tests"]
