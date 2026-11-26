@@ -80,6 +80,29 @@ def test_setup_pins_mujoco_below_the_release_that_breaks_libero_spatial():
     assert '"mujoco==3.3.7"' in (COLAB / "setup.sh").read_text()
 
 
+def test_workers_share_the_runs_and_never_start_the_same_one_twice(tmp_path):
+    settings = {"DRY_RUN": 1, "ARMS": "keep blank", "SUITES": "libero_spatial libero_goal"}
+    first = dry_lines(run(tmp_path, "worker.sh", **settings))
+    second = dry_lines(run(tmp_path, "worker.sh", **settings))
+    assert [line.split(":")[0] for line in first] == [
+        "DRY keep/libero_spatial",
+        "DRY keep/libero_goal",
+        "DRY blank/libero_spatial",
+        "DRY blank/libero_goal",
+    ]
+    assert second == []
+
+
+def test_a_worker_skips_runs_that_are_finished(tmp_path):
+    done = tmp_path / "out" / "keep" / "libero_goal"
+    done.mkdir(parents=True)
+    (done / "eval_info.json").write_text("{}")
+    lines = dry_lines(
+        run(tmp_path, "worker.sh", DRY_RUN=1, ARMS="keep", SUITES="libero_spatial libero_goal")
+    )
+    assert [line.split(":")[0] for line in lines] == ["DRY keep/libero_spatial"]
+
+
 def test_egl_script_writes_the_vendor_file_for_the_nvidia_library(tmp_path):
     lib = tmp_path / "libEGL_nvidia.so.0"
     lib.touch()
