@@ -202,6 +202,18 @@ MUTANTS = [
         "if len(seen) < 1:",
     ),
     (
+        "episode_csv_flips_success",
+        "src/vlashift/report.py",
+        "{int(flag)}",
+        "{int(not flag)}",
+    ),
+    (
+        "episode_csv_swaps_task_and_episode",
+        "src/vlashift/report.py",
+        "{task},{episode}",
+        "{episode},{task}",
+    ),
+    (
         "h3_touching_intervals_hold",
         "src/vlashift/report.py",
         "if min(noise[1], occl[1]) > bright[2]:",
