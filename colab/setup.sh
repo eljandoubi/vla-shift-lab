@@ -13,6 +13,9 @@ bash "$HERE/egl.sh"
 command -v uv > /dev/null || pip -q install uv
 uv venv --python 3.12 "$LR"
 uv pip install --python "$PY" "lerobot[smolvla,libero]"
+# MuJoCo 3.4 and later break the start state of libero_spatial task 5 (lerobot issue 4390).
+uv pip install --python "$PY" "mujoco==3.3.7"
+"$PY" -c "import mujoco; print('mujoco', mujoco.__version__)"
 uv pip install --python "$PY" -e "$REPO_DIR[report]"
 
 # hf-libero asks a question with input() at the first import when ~/.libero/config.yaml is missing

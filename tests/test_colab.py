@@ -76,6 +76,10 @@ def test_common_replaces_the_notebook_plotting_backend():
     assert done.stdout.splitlines()[-1] == "Agg"
 
 
+def test_setup_pins_mujoco_below_the_release_that_breaks_libero_spatial():
+    assert '"mujoco==3.3.7"' in (COLAB / "setup.sh").read_text()
+
+
 def test_egl_script_writes_the_vendor_file_for_the_nvidia_library(tmp_path):
     lib = tmp_path / "libEGL_nvidia.so.0"
     lib.touch()
@@ -123,6 +127,7 @@ def test_dry_run_prints_one_command_per_arm_and_suite(tmp_path):
         "--eval.n_episodes=10",
         "--eval.batch_size=1",
         "--eval.use_async_envs=false",
+        "--policy.n_action_steps=10",
         "--seed=1000",
         f"--output_dir={out}/blank/libero_goal.partial",
     ):
@@ -144,6 +149,7 @@ def test_dry_run_options_reach_the_command(tmp_path):
         EPISODES=3,
         IMAGE_SIZE=360,
         SEED=7,
+        N_ACTION_STEPS=25,
         EXTRA_ARGS="--policy.dtype=torch.float32 --foo=1",
     )
     (line,) = dry_lines(done)
@@ -153,6 +159,7 @@ def test_dry_run_options_reach_the_command(tmp_path):
         "--eval.n_episodes=3",
         "--env.observation_height=360",
         "--seed=7",
+        "--policy.n_action_steps=25",
         "--policy.dtype=torch.float32",
         "--foo=1",
     ):

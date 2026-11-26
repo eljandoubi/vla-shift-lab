@@ -23,6 +23,7 @@ args=(
   --env.observation_height="$IMAGE_SIZE" --env.observation_width="$IMAGE_SIZE"
   --env.init_states=true --env.max_parallel_tasks=1
   --eval.n_episodes="$EPISODES" --eval.batch_size=1 --eval.use_async_envs=false
+  --policy.n_action_steps="$N_ACTION_STEPS"
   --seed="$SEED" --rename_map="$RENAME" --output_dir="$work"
 )
 [ "$RESET" = soft ] && args+=(--env.hard_reset=false)
@@ -73,7 +74,7 @@ baseline=()
   export VLASHIFT_VIDEOS="$VIDEOS" VLASHIFT_DUMP_FRAMES="$DUMP_FRAMES"
   "$PY" -m vlashift.cli meta "$work" --arm "$arm" --suite "$suite" --episodes "$EPISODES" \
     --seed "$SEED" --revision "$REVISION" --image-size "$IMAGE_SIZE" --reset "$RESET" \
-    --task-ids "$TASK_IDS" --extra-args="$EXTRA_ARGS"
+    --task-ids "$TASK_IDS" --extra-args="--policy.n_action_steps=$N_ACTION_STEPS${EXTRA_ARGS:+ $EXTRA_ARGS}"
 ) || fail "could not write meta.json"
 
 mv "$work" "$dir"

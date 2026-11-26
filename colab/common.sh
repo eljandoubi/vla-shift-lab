@@ -10,6 +10,7 @@ POLICY=${POLICY:-lerobot/smolvla_libero}
 REVISION=${REVISION:-a24f1f380461b665158d52acd140152c79e8b36d}
 SEED=${SEED:-1000}
 EPISODES=${EPISODES:-10}                 # per task; the pre-registered design uses 10
+N_ACTION_STEPS=${N_ACTION_STEPS:-10}     # actions played per predicted chunk; the checkpoint ships 50, about 20 points worse
 SUITES=${SUITES:-libero_spatial libero_object libero_goal libero_10}
 TASK_IDS=${TASK_IDS:-all}                # all, or a list such as [0]
 IMAGE_SIZE=${IMAGE_SIZE:-256}            # training size of the checkpoint; LeRobot 0.7.0 renders 360
