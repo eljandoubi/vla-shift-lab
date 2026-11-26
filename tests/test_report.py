@@ -142,6 +142,13 @@ def test_h1_verdict_follows_the_thresholds_of_the_readme(spatial, obj, goal, ver
     assert h1_verdict(spatial, obj, goal) == verdict
 
 
+def test_h1_without_a_goal_run_can_only_be_falsified() -> None:
+    assert h1_verdict(30, 0) == "falsified"
+    assert h1_verdict(0, 30) == "falsified"
+    assert h1_verdict(29, 0) == "not run"
+    assert h1_verdict(0, 0) == "not run"
+
+
 @pytest.mark.parametrize(
     ("spatial", "obj", "verdict"),
     [
@@ -154,6 +161,11 @@ def test_h1_verdict_follows_the_thresholds_of_the_readme(spatial, obj, goal, ver
         (19, 0, "unclear"),
         (20, 0, "falsified"),
         (0, 20, "falsified"),
+        (20, None, "falsified"),
+        (None, 20, "falsified"),
+        (19, None, "not run"),
+        (None, 0, "not run"),
+        (None, None, "not run"),
     ],
 )
 def test_h2_verdict_follows_the_thresholds_of_the_readme(spatial, obj, verdict):
@@ -202,6 +214,29 @@ def test_hypothesis_rows_apply_the_rules_to_a_complete_tree(tmp_path):
         "noise_0.1 +60.0 [+60.0, +60.0], occl_0.4 +40.0 [+40.0, +40.0], "
         "bright_0.5 +0.0 [+0.0, +0.0]"
     )
+
+
+def test_hypothesis_rows_falsify_h1_without_a_goal_run(tmp_path):
+    for suite in ("libero_spatial", "libero_object"):
+        write_run(tmp_path, "keep", suite, uniform(9))
+        write_run(tmp_path, "blank", suite, uniform(1))
+    rows = hypothesis_rows(load_tree(tmp_path))
+    assert rows[0][1] == "blank: Spatial +80.0, Object +80.0"
+    assert rows[0][2] == "falsified"
+
+
+def test_hypothesis_rows_falsify_h2_from_one_suite(tmp_path):
+    write_run(tmp_path, "keep", "libero_spatial", uniform(9))
+    write_run(tmp_path, "other", "libero_spatial", uniform(2))
+    rows = hypothesis_rows(load_tree(tmp_path))
+    assert rows[1][1] == "other: Spatial +70.0"
+    assert rows[1][2] == "falsified"
+
+
+def test_hypothesis_rows_wait_for_both_suites_unless_h2_is_falsified(tmp_path):
+    write_run(tmp_path, "keep", "libero_spatial", uniform(9))
+    write_run(tmp_path, "other", "libero_spatial", uniform(9))
+    assert hypothesis_rows(load_tree(tmp_path))[1][2] == "not run"
 
 
 def test_hypothesis_rows_say_not_run_when_an_arm_is_missing(tree):

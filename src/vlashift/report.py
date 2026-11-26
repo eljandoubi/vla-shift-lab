@@ -123,22 +123,35 @@ def delta_points(tree: dict[str, dict[str, Run]], arm: str, scope: str) -> float
     return 100 * (counts.only_a - counts.only_b) / counts.pairs
 
 
-def h1_verdict(spatial: float, obj: float, goal: float) -> str:
-    """H1 with the thresholds of the README: what the blank instruction costs on each suite."""
+def h1_verdict(spatial: float, obj: float, goal: float | None = None) -> str:
+    """H1 with the thresholds of the README: what the blank instruction costs on each suite.
+
+    The first falsifying condition only needs Spatial and Object, so without a Goal run the
+    answer is "falsified" or "not run".
+    """
     worst = max(spatial, obj)
-    if worst >= 30 or goal <= worst:
+    if worst >= 30:
+        return "falsified"
+    if goal is None:
+        return "not run"
+    if goal <= worst:
         return "falsified"
     if worst < 15 and goal - worst >= 15:
         return "holds"
     return "unclear"
 
 
-def h2_verdict(spatial: float, obj: float) -> str:
-    """H2: what the instruction of another task costs on Spatial and Object."""
-    worst = max(spatial, obj)
-    if worst >= 20:
+def h2_verdict(spatial: float | None, obj: float | None) -> str:
+    """H2: what the instruction of another task costs on Spatial and Object.
+
+    One suite at 20 points or more is enough to falsify it; holding needs both.
+    """
+    seen = [value for value in (spatial, obj) if value is not None]
+    if any(value >= 20 for value in seen):
         return "falsified"
-    return "holds" if worst < 10 else "unclear"
+    if len(seen) < 2:
+        return "not run"
+    return "holds" if max(seen) < 10 else "unclear"
 
 
 Interval = tuple[float, float, float]
@@ -182,16 +195,21 @@ def hypothesis_rows(tree: dict[str, dict[str, Run]], rows: list[dict] | None = N
     )
     # H3 compares arms over the same episodes: a partial run of one arm would bias it.
     same_episodes = len(image) == 3 and len({r["pairs"] for r in image.values()}) == 1
+    h1 = (
+        h1_verdict(blank["Spatial"], blank["Object"], blank.get("Goal"))
+        if {"Spatial", "Object"} <= blank.keys()
+        else "not run"
+    )
     return [
         (
             "H1: the instruction matters little where the scene fixes the task",
             listed("blank", blank),
-            h1_verdict(*blank.values()) if len(blank) == 3 else "not run",
+            h1,
         ),
         (
             "H2: a wrong instruction changes nothing where the policy follows its visual habit",
             listed("other", other),
-            h2_verdict(*other.values()) if len(other) == 2 else "not run",
+            h2_verdict(other.get("Spatial"), other.get("Object")),
         ),
         (
             "H3: noise and occlusion hurt more than brightness",
