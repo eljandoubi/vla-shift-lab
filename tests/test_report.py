@@ -278,7 +278,7 @@ def test_timing_summary_weights_runs_by_episodes(tree):
     text = timing_summary(tree)
     assert text.startswith("6 runs, 600 episodes")
     assert "7.2 s per episode" in text
-    assert "1.2 h in total" in text
+    assert "1.2 h of run time summed over the runs" in text
 
 
 def test_timing_summary_without_timing(tmp_path):

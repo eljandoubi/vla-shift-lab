@@ -235,7 +235,7 @@ def timing_summary(tree: dict[str, dict[str, Run]]) -> str:
     seconds = sum(r.seconds_per_episode * r.episodes for r in runs)
     return (
         f"{len(runs)} runs, {episodes} episodes, {seconds / episodes:.1f} s per episode on "
-        f"average, {seconds / 3600:.1f} h in total."
+        f"average, {seconds / 3600:.1f} h of run time summed over the runs."
     )
 
 
@@ -246,22 +246,23 @@ def figures(tree: dict[str, dict[str, Run]], directory: Path) -> None:
     import matplotlib.pyplot as plt
 
     directory.mkdir(parents=True, exist_ok=True)
-    fig, axes = plt.subplots(2, 2, figsize=(11, 8), sharex=True)
-    for axis, suite in zip(axes.flat, SUITES, strict=True):
-        names, rates, below, above = [], [], [], []
-        for arm in ordered_arms(tree):
+    arms = ordered_arms(tree)
+    suites = [s for s in SUITES if any(s in tree[arm] for arm in arms)]
+    fig, axes = plt.subplots(
+        1, len(suites), figsize=(4.6 * len(suites), 0.45 * len(arms) + 1.8), squeeze=False
+    )
+    for column, (axis, suite) in enumerate(zip(axes[0], suites, strict=True)):
+        for row, arm in enumerate(arms):
             flags = episodes_in(tree[arm], suite)
             if not flags:
+                axis.text(1, row, "not run", va="center", color="grey", fontsize=8)
                 continue
             k, n = sum(flags.values()), len(flags)
             low, high = wilson(k, n)
-            names.append(arm)
-            rates.append(100 * k / n)
-            below.append(100 * (k / n - low))
-            above.append(100 * (high - k / n))
-        axis.barh(range(len(names)), rates, xerr=[below, above], color="#4c72b0", capsize=2)
-        axis.set_yticks(range(len(names)), names)
-        axis.invert_yaxis()
+            xerr = [[100 * (k / n - low)], [100 * (high - k / n)]]
+            axis.barh(row, 100 * k / n, xerr=xerr, color="#4c72b0", capsize=2)
+        axis.set_yticks(range(len(arms)), arms if column == 0 else [])
+        axis.set_ylim(len(arms) - 0.5, -0.5)
         axis.set_xlim(0, 100)
         axis.set_title(LABELS[suite])
     fig.supxlabel("success rate, % (95% Wilson interval)")
@@ -269,16 +270,33 @@ def figures(tree: dict[str, dict[str, Run]], directory: Path) -> None:
     fig.savefig(directory / "success_by_arm.png", dpi=150)
     plt.close(fig)
 
-    rows = [r for r in paired_rows(tree, n_boot=2000) if r["scope"] == "all"]
+    rows = [r for r in paired_rows(tree, n_boot=2000) if r["scope"] != "all"]
     if rows:
-        fig, axis = plt.subplots(figsize=(7, 0.45 * len(rows) + 1.5))
-        deltas = [r["delta"] for r in rows]
-        errors = [[r["delta"] - r["low"] for r in rows], [r["high"] - r["delta"] for r in rows]]
-        axis.errorbar(deltas, range(len(rows)), xerr=errors, fmt="o", color="#c44e52", capsize=3)
+        shown = [arm for arm in arms if any(r["arm"] == arm for r in rows)]
+        scopes = [s for s in SUITES if any(r["scope"] == s for r in rows)]
+        colors = dict(zip(SUITES, ("#c44e52", "#4c72b0", "#55a868", "#8172b3"), strict=True))
+        fig, axis = plt.subplots(figsize=(7.5, 0.8 * len(shown) + 1.8))
+        for number, scope in enumerate(scopes):
+            shift = (number - (len(scopes) - 1) / 2) * 0.25
+            chosen = [r for r in rows if r["scope"] == scope]
+            errors = [
+                [r["delta"] - r["low"] for r in chosen],
+                [r["high"] - r["delta"] for r in chosen],
+            ]
+            axis.errorbar(
+                [r["delta"] for r in chosen],
+                [shown.index(r["arm"]) + shift for r in chosen],
+                xerr=errors,
+                fmt="o",
+                color=colors[scope],
+                capsize=3,
+                label=LABELS[scope],
+            )
         axis.axvline(0, color="grey", linewidth=0.8)
-        axis.set_yticks(range(len(rows)), [r["arm"] for r in rows])
-        axis.invert_yaxis()
+        axis.set_yticks(range(len(shown)), shown)
+        axis.set_ylim(len(shown) - 0.5, -0.5)
         axis.set_xlabel("keep minus arm, points (95% CI, tasks resampled)")
+        axis.legend(loc="best", fontsize=8)
         fig.tight_layout()
         fig.savefig(directory / "drop_vs_keep.png", dpi=150)
         plt.close(fig)
