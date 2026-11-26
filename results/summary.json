@@ -10,6 +10,12 @@
         "episodes": 50
       }
     },
+    "bright_0.5": {
+      "libero_spatial": {
+        "successes": 48,
+        "episodes": 50
+      }
+    },
     "keep": {
       "libero_spatial": {
         "successes": 44,
@@ -21,6 +27,24 @@
       },
       "libero_goal": {
         "successes": 44,
+        "episodes": 50
+      }
+    },
+    "noise_0.1": {
+      "libero_spatial": {
+        "successes": 40,
+        "episodes": 50
+      }
+    },
+    "occl_0.4": {
+      "libero_spatial": {
+        "successes": 24,
+        "episodes": 50
+      }
+    },
+    "other": {
+      "libero_spatial": {
+        "successes": 3,
         "episodes": 50
       }
     }
@@ -58,6 +82,94 @@
       "keep_only": 89,
       "arm_only": 0,
       "p": 3.2311742677852644e-27
+    },
+    {
+      "arm": "other",
+      "scope": "libero_spatial",
+      "pairs": 50,
+      "delta": 82.0,
+      "low": 68.0,
+      "high": 94.0,
+      "keep_only": 42,
+      "arm_only": 1,
+      "p": 1.000444171950221e-11
+    },
+    {
+      "arm": "other",
+      "scope": "all",
+      "pairs": 50,
+      "delta": 82.0,
+      "low": 68.0,
+      "high": 94.0,
+      "keep_only": 42,
+      "arm_only": 1,
+      "p": 1.000444171950221e-11
+    },
+    {
+      "arm": "bright_0.5",
+      "scope": "libero_spatial",
+      "pairs": 50,
+      "delta": -7.999999999999999,
+      "low": -13.999999999999998,
+      "high": -1.9999999999999998,
+      "keep_only": 1,
+      "arm_only": 5,
+      "p": 0.21875
+    },
+    {
+      "arm": "bright_0.5",
+      "scope": "all",
+      "pairs": 50,
+      "delta": -7.999999999999999,
+      "low": -13.999999999999998,
+      "high": -1.9999999999999998,
+      "keep_only": 1,
+      "arm_only": 5,
+      "p": 0.21875
+    },
+    {
+      "arm": "noise_0.1",
+      "scope": "libero_spatial",
+      "pairs": 50,
+      "delta": 8.000000000000002,
+      "low": -3.9999999999999996,
+      "high": 20.000000000000004,
+      "keep_only": 8,
+      "arm_only": 4,
+      "p": 0.3876953125
+    },
+    {
+      "arm": "noise_0.1",
+      "scope": "all",
+      "pairs": 50,
+      "delta": 8.000000000000002,
+      "low": -3.9999999999999996,
+      "high": 20.000000000000004,
+      "keep_only": 8,
+      "arm_only": 4,
+      "p": 0.3876953125
+    },
+    {
+      "arm": "occl_0.4",
+      "scope": "libero_spatial",
+      "pairs": 50,
+      "delta": 40.0,
+      "low": 16.0,
+      "high": 64.0,
+      "keep_only": 23,
+      "arm_only": 3,
+      "p": 8.797645568847656e-05
+    },
+    {
+      "arm": "occl_0.4",
+      "scope": "all",
+      "pairs": 50,
+      "delta": 40.0,
+      "low": 16.0,
+      "high": 64.0,
+      "keep_only": 23,
+      "arm_only": 3,
+      "p": 8.797645568847656e-05
     }
   ]
 }

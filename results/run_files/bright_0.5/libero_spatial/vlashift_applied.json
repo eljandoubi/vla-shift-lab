@@ -1,0 +1,52 @@
+{
+  "config": {
+    "instruction": "keep",
+    "brightness": 0.5,
+    "noise_std": null,
+    "occlusion": null,
+    "joint_std": null,
+    "cameras": null,
+    "seed": 0,
+    "video_episodes": 0,
+    "dump_frames": 0,
+    "applied_path": "/content/vla_runs/bright_0.5/libero_spatial.partial/vlashift_applied.json"
+  },
+  "counts": {
+    "instructions_changed": 0,
+    "images_perturbed": 5774,
+    "init_states_perturbed": 0
+  },
+  "first_states": [
+    [
+      -0.2112,
+      -0.0111,
+      1.1742,
+      3.1409,
+      -0.0028,
+      -0.0877,
+      0.0387,
+      -0.0387
+    ],
+    [
+      -0.2107,
+      -0.0106,
+      1.1742,
+      3.1408,
+      -0.0008,
+      -0.0872,
+      0.0389,
+      -0.0388
+    ],
+    [
+      -0.2094,
+      -0.0092,
+      1.1742,
+      3.1407,
+      0.0021,
+      -0.0861,
+      0.0389,
+      -0.0389
+    ]
+  ],
+  "frames_saved": 0
+}

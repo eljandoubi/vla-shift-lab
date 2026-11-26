@@ -1,0 +1,28 @@
+{
+  "arm": "other",
+  "suite": "libero_spatial",
+  "episodes_per_task": 5,
+  "seed": 1000,
+  "revision": "a24f1f380461b665158d52acd140152c79e8b36d",
+  "image_size": 256,
+  "reset": "hard",
+  "task_ids": "all",
+  "extra_args": "--policy.n_action_steps=10",
+  "python": "3.12.3",
+  "versions": {
+    "vla-shift-lab": "0.1.0",
+    "lerobot": "0.7.0",
+    "torch": "2.15.0",
+    "numpy": "2.2.6",
+    "hf-libero": "0.1.5",
+    "robosuite": "1.4.0",
+    "mujoco": "3.3.7"
+  },
+  "gpu": "Tesla T4",
+  "env": {
+    "VLASHIFT_DUMP_FRAMES": "0",
+    "VLASHIFT_INSTRUCTION": "other",
+    "VLASHIFT_VIDEOS": "0"
+  },
+  "written": "2026-11-26T09:37:53+00:00"
+}
