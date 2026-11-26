@@ -112,6 +112,8 @@ Image shifts apply to both cameras, after the environment pre-processor and befo
 
 No direction is committed for `shuffled`, `paraphrase` and `joint`: the audits above disagree on language (LIBERO-Plus finds models largely insensitive to language variations, LIBERO-Para finds drops of 22 to 52 points under paraphrases), so these arms are reported as exploratory.
 
+`scripts/make_tables.py` applies these thresholds (`h1_verdict`, `h2_verdict` and `h3_verdict` in `src/vlashift/report.py`) and prints the verdict next to the numbers it used. H3 is only judged when the three arms ran the same episodes.
+
 **Statistics.** Wilson 95% interval per cell. Each arm is compared with `keep` on the same episodes in two ways. The exact McNemar test on the discordant pairs is labelled uncorrected: 8 arms times 4 scopes (three suites and all of them) are compared in the first pass and nothing is corrected. The mean difference gets a 95% interval from resampling whole tasks, because the episodes of a task share a scene and an instruction. McNemar's p-value treats episodes as independent and is therefore optimistic; the task-resampling interval is the one to trust.
 
 **Failure modes.** The `lerobot-eval` output holds success, summed reward and maximum reward per episode, and nothing on how a failed episode went. The study reports success only. `VIDEOS=1` saves a few videos (rendered from the raw simulator, not from the shifted images) for a hand-made look.
@@ -127,6 +129,7 @@ No direction is committed for `shuffled`, `paraphrase` and `joint`: the audits a
 - Noise is drawn from a seeded generator but follows the policy's trajectory, so it is not paired across arms; the simulator is.
 - The occluder, the choice of both cameras and the paraphrases are my choices.
 - LIBERO-Plus (a second environment with 10,030 variants) is not part of this code.
+- `results/mutants.txt` is the output of `scripts/mutate_check.py`: 39 hand-made faults (in the statistics, the instruction transforms, the parsing of results, the image and joint shifts, the start-pose check, the patch and the verdict thresholds) are applied one at a time to a copy of the sources, and each must make a test fail. It says nothing about faults it does not contain.
 
 ## Licence
 
