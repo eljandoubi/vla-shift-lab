@@ -67,7 +67,7 @@ def dry_lines(done):
 def test_common_replaces_the_notebook_plotting_backend():
     """Colab exports a notebook backend that matplotlib in the virtualenv rejects."""
     done = subprocess.run(
-        ["bash", "-c", f". {COLAB / 'common.sh'}; echo $MPLBACKEND"],
+        ["bash", "-c", f'. "{COLAB / "common.sh"}"; echo $MPLBACKEND'],
         capture_output=True,
         text=True,
         env={**os.environ, "MPLBACKEND": "module://matplotlib_inline.backend_inline"},
