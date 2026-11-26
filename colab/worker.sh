@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # usage: worker.sh
 # One worker of a pool. It walks ARMS in order over SUITES and runs the first run that no other
-# worker has claimed; a claim is a directory made with mkdir, which is atomic. Start it twice on a
-# 2-vCPU runtime: a run is CPU bound, so two workers about double the throughput.
+# worker has claimed; a claim is a directory made with mkdir, which is atomic. Whether a second
+# worker helps depends on the machine: compare the seconds per episode of one run alone and of two
+# at once before choosing.
 # A run of another arm waits until the baseline run of its suite has finished, so that it can be
 # checked against it.
 #   ARMS="keep blank other noise_0.1"   arms in priority order, the baseline first
